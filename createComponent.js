@@ -70,7 +70,7 @@ export function createObserverComponent(spec) {
 }
 
 export function makeConnect(store) {
-  return function connect(mapStateToProps = _identity) {
+  return function connect(mapStateToProps = _.identity) {
     return function (Component) {
       return createComponent({
         initialize() {
