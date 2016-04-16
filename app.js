@@ -3,6 +3,8 @@ import _ from "lodash";
 import { createStore, combineReducers } from "redux";
 import { makeConnect, createObserverComponent } from "./createComponent.js";
 
+import { h } from "virtual-dom";
+
 
 // UI
 
@@ -22,9 +24,9 @@ var Example = createObserverComponent({
   },
 
   render() {
-    this.$node.text(
-      this.attr.clicks
-    );
+    return h("button", {}, [
+      String(this.attr.clicks)
+    ]);
   }
 });
 
