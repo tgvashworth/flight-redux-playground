@@ -1,62 +1,63 @@
-var _ = require("lodash");
+import _ from "lodash";
 
 window.$ = window.jQuery = require("jquery");
-var flight = require("flightjs");
-var withState = require("flight-with-state");
+import flight from "flightjs";
+import withState from "flight-with-state";
 
-var redux = require("redux");
-var createStore = redux.createStore;
-var combineReducers = redux.combineReducers;
+import { createStore, combineReducers } from "redux";
+
+const noop = () => {};
 
 // UI
 
-var Base = flight.component(withState, function base() {});
+const Base = flight.component(withState, function base() {});
 
-var special = {
-  attributes: true,
-  initialState: true,
-  defaultAttrs: true,
-  initialize: true,
-  teardown: true
-};
+const createComponent = (function () {
+  var special = {
+    attributes: true,
+    initialState: true,
+    defaultAttrs: true,
+    initialize: true,
+    teardown: true
+  };
 
-function createComponent(spec) {
-  spec = spec || {};
-  return Base.mixin(function () {
-    this.attributes(spec.attributes || {});
-    this.initialState(spec.initialState || {});
-    this.after("initialize", spec.initialize || function () {});
-    this.before("teardown", spec.teardown || function () {});
-    Object.keys(spec || {})
-      .filter(function (k) { return !special[k]; })
-      .reduce(function (self, k) {
-        self[k] = spec[k];
-        return self;
-      }, this);
-  });
-}
+  return function createComponent(spec = {}) {
+    return Base.mixin(function () {
+      this.attributes(spec.attributes || {});
+      this.initialState(spec.initialState || {});
+      this.after("initialize", spec.initialize || noop);
+      this.before("teardown", spec.teardown || noop);
+      Object.keys(spec || {})
+        .filter(k => !special[k])
+        .reduce((self, k) => {
+          self[k] = spec[k];
+          return self;
+        }, this);
+    });
+  }
+}());
 
 function createRenderComponent(spec) {
   spec = spec || {};
   return createComponent(Object.assign(spec, {
     _initialize: spec.initialize,
-    initialize: function () {
+    initialize() {
       this.after("stateChanged", this.render);
       this._initialize();
       this.render();
     },
-    render: spec.render || function () {}
+    render: spec.render || noop
   }));
 }
 
 function createObserverComponent(spec) {
   spec = spec || {};
   return createRenderComponent(Object.assign(spec, {
-    next: function (next) {
-      this.attr = Object.assign(this.attr, next || {});
+    next(nextAttr) {
+      this.attr = Object.assign(this.attr, nextAttr || {});
       this.stateChanged();
     },
-    complete: function () {
+    complete() {
       this.teardown();
     }
   }));
@@ -64,7 +65,7 @@ function createObserverComponent(spec) {
 
 function attach(Component, node, attr) {
   attr = attr || {};
-  var instance = new Component();
+  const instance = new Component();
   instance.initialize(node, attr);
   return instance;
 }
@@ -74,17 +75,17 @@ var Example = createObserverComponent({
     clicks: 0
   },
 
-  initialize: function () {
+  initialize() {
     this.on("click", this.handleClick);
   },
-  
-  handleClick: function (e) {
+
+  handleClick(e) {
     store.dispatch({
       type: "INCREMENT"
     });
   },
-  
-  render: function () {
+
+  render() {
     this.$node.text(
       this.attr.clicks
     );
@@ -92,19 +93,21 @@ var Example = createObserverComponent({
 });
 
 function makeConnect(store) {
-  return function connect(mapStateToProps) {
-    mapStateToProps = mapStateToProps || _.identity;
+  return function connect(mapStateToProps = _identity) {
     return function (Component) {
       return createComponent({
-        initialize: function () {
-        	var child = attach(Component, this.$node, this.attr);
-          var unsubscribe = store.subscribe(function () {
+        initialize() {
+          var child = attach(Component, this.$node, this.attr);
+          var unsubscribe = store.subscribe(() => {
             child.next(
               mapStateToProps(store.getState())
             );
           });
-          
-          this.before('teardown', unsubscribe);
+
+          this.before('teardown', () => {
+            unsubscribe();
+            child.complete();
+          });
         }
       });
     };
