@@ -50,9 +50,16 @@ function createRenderComponent(spec) {
   }));
 }
 
+function attach(Component, node, attr) {
+  attr = attr || {};
+  const instance = new Component();
+  instance.initialize(node, attr);
+  return instance;
+}
+
 function createObserverComponent(spec) {
   spec = spec || {};
-  return createRenderComponent(Object.assign(spec, {
+  var Component = createRenderComponent(Object.assign(spec, {
     next(nextAttr) {
       this.attr = Object.assign(this.attr, nextAttr || {});
       this.stateChanged();
@@ -61,13 +68,12 @@ function createObserverComponent(spec) {
       this.teardown();
     }
   }));
-}
 
-function attach(Component, node, attr) {
-  attr = attr || {};
-  const instance = new Component();
-  instance.initialize(node, attr);
-  return instance;
+  Component.attachTo = function (node, attr) {
+    return attach(this, node, attr);
+  };
+
+  return Component;
 }
 
 var Example = createObserverComponent({
@@ -128,17 +134,18 @@ function counter(state, action) {
   }
 }
 
-var store = createStore(combineReducers({
+const store = createStore(combineReducers({
   counter: counter
 }));
 
-var connect = makeConnect(store);
+const connect = makeConnect(store);
 
-// Let's go!
-
-var ConnectedExample = connect(function (state) {
+const ConnectedExample = connect(function (state) {
   return {
     clicks: state.counter
   };
 })(Example);
-var example = attach(ConnectedExample, window.target);
+
+// Let's go!
+
+const example = ConnectedExample.attachTo(window.target);
