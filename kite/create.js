@@ -1,13 +1,14 @@
-window.$ = window.jQuery = require("jquery");
 import flight from "flightjs";
 import withState from "flight-with-state";
 
-import { create, diff, patch } from "virtual-dom";
+import { h, create, diff, patch } from "virtual-dom";
+
+const compose = (f, g) => v => f(g(v));
 
 const noop = () => {};
 const Base = flight.component(withState, function base() {});
 
-export const createComponent = (function () {
+export const createClass = (function () {
   var special = {
     attributes: true,
     initialState: true,
@@ -16,7 +17,7 @@ export const createComponent = (function () {
     teardown: true
   };
 
-  return function createComponent(spec = {}) {
+  return function createClass(spec = {}) {
     return Base.mixin(function () {
       this.attributes(spec.attributes || {});
       this.initialState(spec.initialState || {});
@@ -32,21 +33,22 @@ export const createComponent = (function () {
   }
 }());
 
-export function createRenderComponent(spec = {}) {
+export const createRenderComponent = compose(createClass, (spec = {}) => {
   const _initialize = spec.initialize || noop;
-  return createComponent(Object.assign(spec, {
+  return Object.assign(spec, {
     initialize() {
       this.after("stateChanged", this.render);
       _initialize.call(this);
       this.render();
     },
     render: spec.render || noop
-  }));
-}
+  });
+});
 
-export function createVDOMComponent(spec = {}) {
+export const createVDOMComponent = compose(createRenderComponent, (spec = {}) => {
   const _render = spec.render || noop;
-  return createRenderComponent(Object.assign(spec, {
+  return Object.assign(spec, {
+    h,
     render: function () {
       if (!this.tree) {
         this.tree = _render.call(this);
@@ -58,19 +60,11 @@ export function createVDOMComponent(spec = {}) {
       this.rootNode = patch(this.rootNode, patches);
       this.tree = newTree;
     }
-  }));
-}
+  });
+});
 
-export function attach(Component, node, attr) {
-  attr = attr || {};
-  const instance = new Component();
-  instance.initialize(node, attr);
-  return instance;
-}
-
-export function createObserverComponent(spec) {
-  spec = spec || {};
-  var Component = createVDOMComponent(Object.assign(spec, {
+export const createObserverComponent = compose(createVDOMComponent, (spec = {}) => {
+  return Object.assign(spec, {
     next(nextAttr) {
       this.attr = Object.assign(this.attr, nextAttr || {});
       this.stateChanged();
@@ -78,34 +72,9 @@ export function createObserverComponent(spec) {
     complete() {
       this.teardown();
     }
-  }));
+  });
+});
 
-  Component.attachTo = function (node, attr) {
-    return attach(this, node, attr);
-  };
-
-  return Component;
+export default function createComponent(...args) {
+  return createObserverComponent(...args);
 }
-
-export function makeConnect(store) {
-  return function connect(mapStateToProps = _.identity) {
-    return function (Component) {
-      return createComponent({
-        initialize() {
-          var child = attach(Component, this.$node, this.attr);
-          var unsubscribe = store.subscribe(() => {
-            child.next(
-              mapStateToProps(store.getState())
-            );
-          });
-
-          this.before('teardown', () => {
-            unsubscribe();
-            child.complete();
-          });
-        }
-      });
-    };
-  };
-}
-

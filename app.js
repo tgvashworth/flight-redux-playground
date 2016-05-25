@@ -1,14 +1,16 @@
 import _ from "lodash";
 
+window.$ = window.jQuery = require("jquery");
 import { createStore, combineReducers } from "redux";
-import { makeConnect, createObserverComponent } from "./createComponent.js";
+import { makeConnect } from "./kite-redux";
+import { createComponent, attach } from "./kite";
 
 import { h } from "virtual-dom";
 
 
 // UI
 
-var Example = createObserverComponent({
+var Example = createComponent({
   attributes: {
     clicks: 0
   },
@@ -58,4 +60,4 @@ const ConnectedExample = connect(function (state) {
 
 // Let's go!
 
-const example = ConnectedExample.attachTo(window.target);
+window.example = attach(ConnectedExample, window.target);
