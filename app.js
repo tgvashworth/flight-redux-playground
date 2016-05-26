@@ -2,16 +2,16 @@ import _ from "lodash";
 
 window.$ = window.jQuery = require("jquery");
 import { createStore, combineReducers } from "redux";
-import { makeConnect } from "./kite-redux";
-import { createComponent, attach } from "./kite";
-import Style from "./Style";
-
+import cx from "classnames";
 import { h } from "virtual-dom";
 
+import { makeConnect } from "./kite-redux";
+import { createComponent, attach } from "./kite";
+import StyleSheet from "./StyleSheet";
 
 // UI
 
-const styles = Style.create({
+const styles = StyleSheet.create({
   button: {
     fontSize: "1rem",
     padding: "3em",
@@ -21,7 +21,7 @@ const styles = Style.create({
     outlineStyle: "solid"
   }
 });
-const styles2 = Style.create({
+const styles2 = StyleSheet.create({
   root: {
     padding: "3em"
   }
@@ -48,19 +48,17 @@ var Example = createComponent({
   render() {
     const { clicks } = this.attr;
     return h("div", {
-      className: Style.cx({
-        ...styles2.root,
-      }),
-      style: Style.sx({
+      className: cx(styles2.root),
+      style: {
         backgroundColor: `hsl(${clicks * 10 + 20}, 50%, 20%)`
-      })
+      }
     }, [
       h("button", {
-        className: Style.cx(styles.button),
-        style: Style.sx({
+        className: cx(styles.button),
+        style: {
           color: `hsl(${clicks * 10}, 50%, 60%)`,
           backgroundColor: `hsl(${clicks * 10 - 22.5}, 50%, 20%)`
-        })
+        }
       }, [
         `Clicks: ${clicks}`
       ])

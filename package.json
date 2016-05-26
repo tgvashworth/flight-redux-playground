@@ -6,6 +6,7 @@
     "watch": "watchify app.js -o bundle.js -t [ babelify --presets [ es2015 stage-1 ] ] -v --source-maps inline"
   },
   "dependencies": {
+    "classnames": "^2.2.5",
     "flight-with-state": "8.0.0",
     "flightjs": "1.5.1",
     "jquery": "2.2.3",
