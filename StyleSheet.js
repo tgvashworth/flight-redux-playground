@@ -1,3 +1,23 @@
+import fastdom from "fastdom";
+
+const resetCSS =
+`html {font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+body {margin:0}
+button::-moz-focus-inner, input::-moz-focus-inner {border:0;padding:0}
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration {display:none}`
+
+const state = {
+  m: {
+    dxc: {},
+    kxc: {},
+    cs: 0
+  },
+  sheet: document.createElement("style")
+};
+
+// Modify that page. Where should this go?
+document.head.appendChild(state.sheet);
+
 function prop(s) {
   return s.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
 }
@@ -8,25 +28,25 @@ function declaration(k, v) {
 
 function dxcToCss(dxc = {}) {
   return Object.keys(dxc).reduce(
-    (css, d) => `${css}\n.${prefix(dxc[d])}{${d}}`,
+    (css, d) => `${css}.${prefix(dxc[d])}{${d}}`,
     ""
   );
 }
 
-const prefix = c => `_${c}`;
+function updateSheet() {
+  // Update the stylesheet.
+  fastdom.clear(state.fastdomid);
+  state.fastdomid = fastdom.mutate(() => {
+    state.sheet.textContent = `${resetCSS}\n${dxcToCss(state.m.dxc)}`;
+  });
+}
 
-const state = {
-  m: {
-    dxc: {},
-    kxc: {},
-    cs: 0
-  },
-};
+const prefix = c => `_${c}`;
 
 export function create(o) {
   // Process style styles to produce a memory (m) blob of:
   //  - dxc: a deduped map of (declaration -> classnum)
-  //  - kxc: a map from the original (key -> (classnum -> true))
+  //  - kxc: a map from the original (key -> (classname -> true))
   //  - cs: a count of the highest classnum reached
   const { dxc, kxc, cs } = Object.keys(o).reduce(
     // k is the main key on the styles object (o) used to group styles.
@@ -55,6 +75,7 @@ export function create(o) {
             ...kxc,
             [k]: {
               ...(kxc[k] || {}),
+              // prefix: (classnum -> classname)
               [prefix(c)]: true
             }
           }
@@ -65,12 +86,10 @@ export function create(o) {
     // The initial value for the reduce is the existing memory (m) blob
     state.m
   );
-  // Update the stylesheet.
-  // TODO we recalc the whole thing. Sensible?
-  document.getElementById('style').textContent = dxcToCss(dxc);
   // Remember the new values
   state.m = { dxc, kxc, cs };
-  // The returned object maps the original group key to the new classnums
+  updateSheet();
+  // The returned object maps the original group key to the new classnames object
   return Object.keys(o).reduce(
     (res, k) => ({ ...res, [k]: kxc[k] }),
     {}
