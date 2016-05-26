@@ -27,7 +27,6 @@ const styles2 = Style.create({
   }
 });
 
-
 var Example = createComponent({
   attributes: {
     clicks: 0,
@@ -49,7 +48,9 @@ var Example = createComponent({
   render() {
     const { clicks } = this.attr;
     return h("div", {
-      className: Style.cx(styles2.root),
+      className: Style.cx({
+        ...styles2.root,
+      }),
       style: Style.sx({
         backgroundColor: `hsl(${clicks * 10 + 20}, 50%, 20%)`
       })
@@ -61,7 +62,7 @@ var Example = createComponent({
           backgroundColor: `hsl(${clicks * 10 - 22.5}, 50%, 20%)`
         })
       }, [
-        `Clicks: ${this.attr.clicks}`
+        `Clicks: ${clicks}`
       ])
     ]);
   }

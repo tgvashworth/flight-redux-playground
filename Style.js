@@ -84,7 +84,14 @@ const Style = {
     // Remember the new values
     Style.m = { dxc, kxc, cs };
     // The returned object maps the original group key to the new classnums
-    return kxc;
+    return Object.keys(o).reduce(
+      (res, k) => ({ ...res, [k]: kxc[k] }),
+      {}
+    );
+  },
+
+  render() {
+    return dxcToCss(Style.m.dxc);
   }
 };
 
