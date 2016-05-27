@@ -2,8 +2,8 @@
   "name": "flight-redux-playground",
   "version": "1.0.0",
   "scripts": {
-    "build": "browserify app.js -o bundle.js -t [ babelify --presets [ es2015 stage-1 ] ] --source-maps inline",
-    "watch": "watchify app.js -o bundle.js -t [ babelify --presets [ es2015 stage-1 ] ] -v --source-maps inline"
+    "build": "browserify app.js -o bundle.js -d -t [ babelify --presets [ es2015 stage-1 ] --sourceMapsAbsolute ]",
+    "watch": "watchify app.js -o bundle.js -d -t [ babelify --presets [ es2015 stage-1 ] --sourceMapsAbsolute ] -v"
   },
   "dependencies": {
     "classnames": "^2.2.5",
