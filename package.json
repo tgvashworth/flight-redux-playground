@@ -12,6 +12,8 @@
     "flightjs": "1.5.1",
     "jquery": "2.2.3",
     "lodash": "4.6.1",
+    "postcss": "^5.0.21",
+    "postcss-js": "^0.1.3",
     "redux": "3.4.0",
     "virtual-dom": "^2.1.1"
   },

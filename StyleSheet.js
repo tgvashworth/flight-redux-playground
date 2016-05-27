@@ -1,4 +1,6 @@
 import fastdom from "fastdom";
+import postcss from "postcss";
+import { objectify as cssToJs } from "postcss-js";
 
 const resetCSS =
 `html {font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0)}
@@ -44,6 +46,15 @@ function updateSheet() {
 const prefix = c => `_${c}`;
 
 export function create(o) {
+  if (typeof o == 'string') {
+    const jss = cssToJs(postcss.parse(o.trim()));
+    o = Object.keys(jss).reduce(
+      (acc, selector) => {
+        acc[selector.replace(/^\./, '')] = jss[selector];
+        return acc;
+      },
+    {});
+  }
   // Process style styles to produce a memory (m) blob of:
   //  - dxc: a deduped map of (declaration -> classnum)
   //  - kxc: a map from the original (key -> (classname -> true))

@@ -11,16 +11,16 @@ import StyleSheet from "./StyleSheet";
 
 // UI
 
-const styles = StyleSheet.create({
-  button: {
-    fontSize: "1rem",
-    padding: "3em",
-    width: "100%",
-    border: "5px solid rgba(0,0,0,0.5)",
-    outlineColor: "rgba(255,255,255,0.2)",
-    outlineStyle: "solid"
+const styles = StyleSheet.create(`
+  .button {
+    font-size: 1rem;
+    padding: 3em;
+    width: 100%;
+    border: 5px solid rgba(0,0,0,0.5);
+    outline-color: rgba(255,255,255,0.2);
+    outline-style: solid;
   }
-});
+`);
 const styles2 = StyleSheet.create({
   root: {
     padding: "3em"
