@@ -19,7 +19,11 @@ const styles = StyleSheet.create({
     width: "100%",
     border: "5px solid rgba(0,0,0,0.5)",
     outlineColor: "rgba(255,255,255,0.2)",
-    outlineStyle: "solid"
+    outlineStyle: "solid",
+    transition: "padding 1s ease-in-out"
+  },
+  buttonAlt: {
+    padding: "5em"
   }
 });
 const styles2 = StyleSheet.create({
@@ -55,7 +59,10 @@ var Example = createComponent({
       }
     }, [
       h("button", {
-        className: cx(styles.button),
+        className: cx({
+          ...styles.button,
+          ...(clicks % 2 === 0 && styles.buttonAlt)
+        }),
         style: {
           color: `hsl(${clicks * 10}, 50%, 60%)`,
           backgroundColor: `hsl(${clicks * 10 - 22.5}, 50%, 20%)`
