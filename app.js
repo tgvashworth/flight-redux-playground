@@ -8,24 +8,25 @@ import { h } from "virtual-dom";
 import { makeConnect } from "./kite-redux";
 import { createComponent, attach } from "./kite";
 import StyleSheet from "./StyleSheet";
+window.StyleSheet = StyleSheet;
 
 // UI
 
-const styles = StyleSheet.create({
-  button: {
-    fontSize: "1rem",
-    padding: "3em",
-    width: "100%",
-    border: "5px solid rgba(0,0,0,0.5)",
-    outlineColor: "rgba(255,255,255,0.2)",
-    outlineStyle: "solid"
-  }
-});
-const styles2 = StyleSheet.create({
-  root: {
-    padding: "3em"
-  }
-});
+//const styles = StyleSheet.create({
+  //button: {
+    //fontSize: "1rem",
+    //padding: "3em",
+    //width: "100%",
+    //border: "5px solid rgba(0,0,0,0.5)",
+    //outlineColor: "rgba(255,255,255,0.2)",
+    //outlineStyle: "solid"
+  //}
+//});
+//const styles2 = StyleSheet.create({
+  //root: {
+    //padding: "3em"
+  //}
+//});
 
 var Example = createComponent({
   attributes: {
@@ -48,19 +49,19 @@ var Example = createComponent({
   render() {
     const { clicks } = this.attr;
     return h("div", {
-      className: cx(styles2.root),
+      className: cx(),
       style: {
-        backgroundColor: `hsl(${clicks * 10 + 20}, 50%, 20%)`
+        backgroundColor: `hsl(${clicks * 10 + 180}, 50%, 20%)`
       }
     }, [
       h("button", {
-        className: cx(styles.button),
+        className: cx(),
         style: {
           color: `hsl(${clicks * 10}, 50%, 60%)`,
           backgroundColor: `hsl(${clicks * 10 - 22.5}, 50%, 20%)`
         }
       }, [
-        `Clicks: ${clicks}`
+        `${clicks}`
       ])
     ]);
   }
