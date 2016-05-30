@@ -59,7 +59,7 @@ function registerStyle(style = {}) {
       const id = ++uid
       // add new declaration to the store
       stylesCache[cacheKey] = {
-        id: `__style${id}`,
+        id: `_${id}`,
         style: prefixAll({ [prop]: value })
       }
     }
