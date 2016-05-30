@@ -1,4 +1,4 @@
-export function hyphenate(string) {
+export default function hyphenate(string) {
   return string
     .replace(/([A-Z])/g, '-$1')
     .toLowerCase()

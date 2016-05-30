@@ -1,7 +1,15 @@
+import prefixAll from 'inline-style-prefix-all'
 import hyphenate from './hyphenate'
+import expandStyle from './expandStyle'
+import flattenStyle from './flattenStyle'
+import processTransform from './processTransform'
 
 let stylesCache = {}
 let uid = 0
+
+const getCacheKey = (prop, value) => `${prop}:${value}`
+
+// Render
 
 function createCssDeclarations(style) {
   return Object.keys(style).map(prop => {
@@ -22,6 +30,33 @@ function renderToString() {
   }, css)
 }
 
+// Registration
+
+function normalizeStyle(style) {
+  return processTransform(expandStyle(flattenStyle(style)))
+}
+
+function registerStyle(style = {}) {
+  const normalizedStyle = normalizeStyle(style)
+
+  Object.keys(normalizedStyle).forEach(prop => {
+    const value = normalizedStyle[prop]
+    const cacheKey = getCacheKey(prop, value)
+    const exists = stylesCache[cacheKey] && stylesCache[cacheKey].id
+    if (!exists) {
+      const id = ++uid
+      // add new declaration to the store
+      stylesCache[cacheKey] = {
+        id: `__style${id}`,
+        style: prefixAll({ [prop]: value })
+      }
+    }
+  })
+
+  return style
+}
+
 export default {
-  renderToString
+  registerStyle,
+  renderToString,
 }

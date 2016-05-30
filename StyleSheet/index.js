@@ -9,6 +9,17 @@ function renderToString() {
   return `${resetCSS}\n${predefinedCSS}\n${css}`
 }
 
+function create(styles = {}) {
+  Object.keys(styles).forEach(k => {
+    StyleSheetRegistry.registerStyle(styles[k])
+  });
+
+  // TODO render
+
+  return styles
+}
+
 export default {
-  renderToString
+  create,
+  renderToString,
 }
