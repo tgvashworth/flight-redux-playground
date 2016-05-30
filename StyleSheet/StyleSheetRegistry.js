@@ -9,6 +9,10 @@ let uid = 0
 
 const getCacheKey = (prop, value) => `${prop}:${value}`
 
+function normalizeStyle(style) {
+  return processTransform(expandStyle(flattenStyle(style)))
+}
+
 // Render
 
 function createCssDeclarations(style) {
@@ -30,11 +34,19 @@ function renderToString() {
   }, css)
 }
 
-// Registration
+function resolve(style = {}) {
+  const normalizedStyle = normalizeStyle(style)
 
-function normalizeStyle(style) {
-  return processTransform(expandStyle(flattenStyle(style)))
+  return Object.keys(normalizedStyle).reduce((result, prop) => {
+    const value = normalizedStyle[prop]
+    const cacheKey = getCacheKey(prop, value)
+    const id = stylesCache[cacheKey].id
+    result[id] = true
+    return result
+  }, {})
 }
+
+// Registration
 
 function registerStyle(style = {}) {
   const normalizedStyle = normalizeStyle(style)
@@ -59,4 +71,5 @@ function registerStyle(style = {}) {
 export default {
   registerStyle,
   renderToString,
+  resolve,
 }

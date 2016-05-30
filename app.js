@@ -49,13 +49,13 @@ var Example = createComponent({
   render() {
     const { clicks } = this.attr;
     return h("div", {
-      //className: cx(styles2.root),
+      className: cx(styles2.root),
       style: {
         backgroundColor: `hsl(${clicks * 10 + 180}, 50%, 20%)`
       }
     }, [
       h("button", {
-        //className: cx(styles.button),
+        className: cx(styles.button),
         style: {
           color: `hsl(${clicks * 10}, 50%, 60%)`,
           backgroundColor: `hsl(${clicks * 10 - 22.5}, 50%, 20%)`
@@ -95,4 +95,5 @@ const ConnectedExample = connect(function (state) {
 
 // Let's go!
 
+StyleSheet.inject()
 window.example = attach(ConnectedExample, window.target);
