@@ -2,8 +2,8 @@
   "name": "flight-redux-playground",
   "version": "1.0.0",
   "scripts": {
-    "build": "browserify app.js -o bundle.js -d -t [ babelify ]",
-    "watch": "watchify app.js -o bundle.js -d -t [ babelify ] -v"
+    "build": "browserify app.js -o bundle.js -d -t [ jsx-transform/browserify --factory h ] -t [ babelify ]",
+    "watch": "watchify app.js -o bundle.js -d -t [ jsx-transform/browserify --factory h ] -t [ babelify ]  -v"
   },
   "dependencies": {
     "classnames": "^2.2.5",
@@ -23,6 +23,7 @@
     "babel-preset-stage-1": "^6.5.0",
     "babelify": "^7.2.0",
     "browserify": "^13.0.0",
+    "jsx-transform": "^2.3.0",
     "watchify": "^3.7.0"
   }
 }

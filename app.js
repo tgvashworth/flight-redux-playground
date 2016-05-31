@@ -52,25 +52,25 @@ var Example = createComponent({
 
   render() {
     const { clicks } = this.attr;
-    return h("div", {
-      className: cx(styles2.root),
-      style: {
-        backgroundColor: `hsl(${clicks * 10 + 180}, 50%, 20%)`
-      }
-    }, [
-      h("button", {
-        className: cx({
-          ...styles.button,
-          ...(clicks % 2 === 0 && styles.buttonAlt)
-        }),
-        style: {
-          color: `hsl(${clicks * 10}, 50%, 60%)`,
-          backgroundColor: `hsl(${clicks * 10 - 22.5}, 50%, 20%)`
-        }
-      }, [
-        `${clicks}`
-      ])
-    ]);
+    return (
+      <div
+        className={cx(styles2.root)}
+        style={{
+          backgroundColor: `hsl(${clicks * 10 + 180}, 50%, 20%)`
+        }}>
+        <button
+          className={cx({
+            ...styles.button,
+            ...(clicks % 2 === 0 && styles.buttonAlt)
+          })}
+          style={{
+            color: `hsl(${clicks * 10}, 50%, 60%)`,
+            backgroundColor: `hsl(${clicks * 10 - 22.5}, 50%, 20%)`
+          }}>
+          {clicks}
+        </button>
+      </div>
+    );
   }
 });
 
